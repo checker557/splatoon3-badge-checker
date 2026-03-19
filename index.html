@@ -1,3 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>バッジチェッカー</title>
+
+<style>
+body {
+  font-family: sans-serif;
+  background: #f4f4f4;
+  margin: 0;
+  padding: 20px;
+}
+
+h2 {
+  margin-top: 30px;
+}
+
+.controls {
+  margin-bottom: 20px;
+}
+
+input {
+  padding: 8px;
+  width: 200px;
+}
+
+button {
+  padding: 8px 12px;
+  margin-left: 5px;
+  cursor: pointer;
+}
+
+.badge {
+  background: white;
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 8px;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.badge:hover {
+  transform: scale(1.02);
+}
+
+.badge.locked {
+  opacity: 0.5;
+  filter: grayscale(100%);
+}
+
+.badge-title {
+  font-weight: bold;
+}
+
+.badge-condition {
+  font-size: 13px;
+  color: #666;
+}
 
 .hidden {
   display: none;
@@ -7,7 +68,6 @@
 <body>
 
 <h1>バッジチェッカー</h1>
-<div id="progress" style="margin:10px 0; font-weight:bold;"></div>
 
 <div class="controls">
   <input type="text" id="search" placeholder="検索">
@@ -329,29 +389,32 @@ function render() {
         localStorage.setItem("badges", JSON.stringify(saved));
         render();
       };
-function render() {
-  container.innerHTML = "";
-  const lines = badgeData.split("\n");
-  let total = 0;
-  let obtained = 0;
 
-  lines.forEach(line => {
-    line = line.trim();
-    if (!line) return;
+      if (showUnobtainedOnly && saved[name]) {
+        badge.classList.add("hidden");
+      }
 
-    if (!line.includes("　")) {
-      const h2 = document.createElement("h2");
-      h2.textContent = line;
-      container.appendChild(h2);
-    } else {
-      total++;
+      container.appendChild(badge);
+    }
+  });
+}
 
-      const [name, condition] = line.split("　");
-      const badge = document.createElement("div");
-      badge.className = "badge";
+function toggleUnobtained() {
+  showUnobtainedOnly = !showUnobtainedOnly;
+  render();
+}
 
-      if (!saved[name]) {
-        badge.classList.add("
+document.getElementById("search").addEventListener("input", function() {
+  const word = this.value.toLowerCase();
+  document.querySelectorAll(".badge").forEach(b => {
+    b.classList.toggle("hidden",
+      !b.textContent.toLowerCase().includes(word)
+    );
+  });
+});
+
+render();
+</script>
 
 </body>
 </html>
