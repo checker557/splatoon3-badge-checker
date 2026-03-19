@@ -390,6 +390,43 @@ function render() {
         localStorage.setItem("badges", JSON.stringify(saved));
         render();
       };
+function render() {
+  container.innerHTML = "";
+  const lines = badgeData.split("\n");
+  let total = 0;
+  let obtained = 0;
+
+  lines.forEach(line => {
+    line = line.trim();
+    if (!line) return;
+
+    if (!line.includes("　")) {
+      const h2 = document.createElement("h2");
+      h2.textContent = line;
+      container.appendChild(h2);
+    } else {
+      total++;
+
+      const [name, condition] = line.split("　");
+      const badge = document.createElement("div");
+      badge.className = "badge";
+
+      if (!saved[name]) {
+        badge.classList.add("locked");
+      } else {
+        obtained++;
+      }
+
+      badge.innerHTML = `
+        <div class="badge-title">${name}</div>
+        <div class="badge-condition">${condition}</div>
+      `;
+
+      badge.onclick = () => {
+        saved[name] = !saved[name];
+        localStorage.setItem("badges", JSON.stringify(saved));
+        render();
+      };
 
       if (showUnobtainedOnly && saved[name]) {
         badge.classList.add("hidden");
@@ -398,8 +435,11 @@ function render() {
       container.appendChild(badge);
     }
   });
-}
 
+  const percent = total === 0 ? 0 : Math.floor((obtained / total) * 100);
+  document.getElementById("progress").textContent =
+    `取得率：${obtained} / ${total}（${percent}%）`;
+}
 function toggleUnobtained() {
   showUnobtainedOnly = !showUnobtainedOnly;
   render();
