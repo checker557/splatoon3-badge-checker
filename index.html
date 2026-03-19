@@ -1,64 +1,3 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>バッジチェッカー</title>
-
-<style>
-body {
-  font-family: sans-serif;
-  background: #f4f4f4;
-  margin: 0;
-  padding: 20px;
-}
-
-h2 {
-  margin-top: 30px;
-}
-
-.controls {
-  margin-bottom: 20px;
-}
-
-input {
-  padding: 8px;
-  width: 200px;
-}
-
-button {
-  padding: 8px 12px;
-  margin-left: 5px;
-  cursor: pointer;
-}
-
-.badge {
-  background: white;
-  border-radius: 10px;
-  padding: 10px;
-  margin-bottom: 8px;
-  border: 1px solid #ddd;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.badge:hover {
-  transform: scale(1.02);
-}
-
-.badge.locked {
-  opacity: 0.5;
-  filter: grayscale(100%);
-}
-
-.badge-title {
-  font-weight: bold;
-}
-
-.badge-condition {
-  font-size: 13px;
-  color: #666;
-}
 
 .hidden {
   display: none;
@@ -412,50 +351,7 @@ function render() {
       badge.className = "badge";
 
       if (!saved[name]) {
-        badge.classList.add("locked");
-      } else {
-        obtained++;
-      }
-
-      badge.innerHTML = `
-        <div class="badge-title">${name}</div>
-        <div class="badge-condition">${condition}</div>
-      `;
-
-      badge.onclick = () => {
-        saved[name] = !saved[name];
-        localStorage.setItem("badges", JSON.stringify(saved));
-        render();
-      };
-
-      if (showUnobtainedOnly && saved[name]) {
-        badge.classList.add("hidden");
-      }
-
-      container.appendChild(badge);
-    }
-  });
-
-  const percent = total === 0 ? 0 : Math.floor((obtained / total) * 100);
-  document.getElementById("progress").textContent =
-    `取得率：${obtained} / ${total}（${percent}%）`;
-}
-function toggleUnobtained() {
-  showUnobtainedOnly = !showUnobtainedOnly;
-  render();
-}
-
-document.getElementById("search").addEventListener("input", function() {
-  const word = this.value.toLowerCase();
-  document.querySelectorAll(".badge").forEach(b => {
-    b.classList.toggle("hidden",
-      !b.textContent.toLowerCase().includes(word)
-    );
-  });
-});
-
-render();
-</script>
+        badge.classList.add("
 
 </body>
 </html>
