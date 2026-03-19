@@ -1,21 +1,80 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>Splatoon3 Badge Checker</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>バッジチェッカー</title>
+
 <style>
-body { font-family: sans-serif; background:#f2f2f2; padding:20px; }
-.badge { margin: 8px 0; }
-.progress { margin-top:20px; font-weight:bold; }
+body {
+  font-family: sans-serif;
+  background: #f4f4f4;
+  margin: 0;
+  padding: 20px;
+}
+
+h2 {
+  margin-top: 30px;
+}
+
+.controls {
+  margin-bottom: 20px;
+}
+
+input {
+  padding: 8px;
+  width: 200px;
+}
+
+button {
+  padding: 8px 12px;
+  margin-left: 5px;
+  cursor: pointer;
+}
+
+.badge {
+  background: white;
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 8px;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.badge:hover {
+  transform: scale(1.02);
+}
+
+.badge.locked {
+  opacity: 0.5;
+  filter: grayscale(100%);
+}
+
+.badge-title {
+  font-weight: bold;
+}
+
+.badge-condition {
+  font-size: 13px;
+  color: #666;
+}
+
+.hidden {
+  display: none;
+}
 </style>
 </head>
 <body>
 
-<h1>Splatoon3 バッジチェッカー</h1>
-<p>※進捗はあなたの端末にのみ保存されます。他人には共有されません。</p>
+<h1>バッジチェッカー</h1>
 
-<div id="badges"></div>
-<div class="progress" id="progress"></div>
+<div class="controls">
+  <input type="text" id="search" placeholder="検索">
+  <button onclick="toggleUnobtained()">未取得のみ</button>
+</div>
+
+<div id="container"></div>
 
 <script>
 const badgeData = `
@@ -52,43 +111,65 @@ const badgeData = `
 店員(金)　売店で1000回注文した
 `;
 
-const container = document.getElementById("badges");
-const progress = document.getElementById("progress");
+const container = document.getElementById("container");
+const saved = JSON.parse(localStorage.getItem("badges") || "{}");
+let showUnobtainedOnly = false;
 
-function updateProgress() {
-  const total = badgeList.length;
-  let checked = 0;
-  badgeList.forEach((_, i) => {
-    if(localStorage.getItem("badge-"+i) === "true") checked++;
+function render() {
+  container.innerHTML = "";
+  const lines = badgeData.split("\n");
+  let currentCategory = null;
+
+  lines.forEach(line => {
+    line = line.trim();
+    if (!line) return;
+
+    if (!line.includes("　")) {
+      const h2 = document.createElement("h2");
+      h2.textContent = line;
+      container.appendChild(h2);
+    } else {
+      const [name, condition] = line.split("　");
+      const badge = document.createElement("div");
+      badge.className = "badge";
+
+      if (!saved[name]) badge.classList.add("locked");
+
+      badge.innerHTML = `
+        <div class="badge-title">${name}</div>
+        <div class="badge-condition">${condition}</div>
+      `;
+
+      badge.onclick = () => {
+        saved[name] = !saved[name];
+        localStorage.setItem("badges", JSON.stringify(saved));
+        render();
+      };
+
+      if (showUnobtainedOnly && saved[name]) {
+        badge.classList.add("hidden");
+      }
+
+      container.appendChild(badge);
+    }
   });
-  progress.textContent = `達成率：${checked} / ${total} (${Math.round((checked/total)*100)}%)`;
 }
 
-badgeList.forEach((badge, index) => {
-  const div = document.createElement("div");
-  div.className = "badge";
+function toggleUnobtained() {
+  showUnobtainedOnly = !showUnobtainedOnly;
+  render();
+}
 
-  const checkbox = document.createElement("input");
-  checkbox.type = "checkbox";
-  checkbox.id = "badge-" + index;
-
-  checkbox.checked = localStorage.getItem("badge-" + index) === "true";
-
-  checkbox.addEventListener("change", () => {
-    localStorage.setItem("badge-" + index, checkbox.checked);
-    updateProgress();
+document.getElementById("search").addEventListener("input", function() {
+  const word = this.value.toLowerCase();
+  document.querySelectorAll(".badge").forEach(b => {
+    b.classList.toggle("hidden",
+      !b.textContent.toLowerCase().includes(word)
+    );
   });
-
-  const label = document.createElement("label");
-  label.htmlFor = checkbox.id;
-  label.textContent = " " + badge;
-
-  div.appendChild(checkbox);
-  div.appendChild(label);
-  container.appendChild(div);
 });
 
-updateProgress();
+render();
 </script>
 
 </body>
