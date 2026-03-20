@@ -1713,12 +1713,13 @@ function render(){
       badge.appendChild(img);
       badge.appendChild(text);
 
-      badge.onclick=()=>{
-        saved[name]=!saved[name];
-        localStorage.setItem("badges",JSON.stringify(saved));
-        updateProgress(); // ページ全体リロードなしで取得率更新
-        render();          // 表示更新
-      };
+      badge.onclick = (e) => {
+  e.preventDefault();               // 安全のため追加
+  saved[name] = !saved[name];       // 状態を切り替え
+  localStorage.setItem("badges", JSON.stringify(saved));
+  badge.classList.toggle("locked", !saved[name]); // 見た目だけ更新
+  updateProgress();                  // 取得率だけ更新
+};
 
       if(showUnobtainedOnly && saved[name]){
         badge.classList.add("hidden");
@@ -1732,17 +1733,16 @@ function render(){
 }
 
 // ----- 進捗表示関数 -----
-function updateProgress(total, obtained){
-  if(total===undefined || obtained===undefined){
-    const lines = badgeData.split("\n").filter(l=>l.includes("　"));
-    total = lines.length;
-    obtained = lines.filter(l=>{
-      const name = l.split("　")[0];
-      return saved[name];
-    }).length;
-  }
-  const percent = total===0?0:Math.floor(obtained/total*100);
-  document.getElementById("progress").textContent=
+function updateProgress(){
+  const lines = badgeData.split("\n").filter(l => l.includes("　"));
+  const total = lines.length;
+  const obtained = lines.filter(l=>{
+    const name = l.split("　")[0];
+    return saved[name];
+  }).length;
+
+  const percent = total===0 ? 0 : Math.floor(obtained / total * 100);
+  document.getElementById("progress").textContent =
     `取得率：${obtained} / ${total}（${percent}%）`;
 }
 
