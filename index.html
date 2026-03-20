@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>スプラトゥーン3　バッジチェッカー</title>
+<title>ススプラトゥーン3　バッジチェッカー</title>
 
 <style>
 body{
@@ -83,14 +83,7 @@ input{
 <body>
 
 <h1>スプラトゥーン3　バッジチェッカー</h1>
-<p style="font-size:14px; color:#555; margin-top:5px;">
-  スプラトゥーン3のバッジチェッカーです。チャッピーとの共同制作です。
-  バグやご不明な点がございましたら作者のX(旧Twitter)アカウントのDMまでお願い致します。
-  作者(弥勒丸)→@ilovemariohara
-
-  (更新履歴)
-  2026/3/20　ボタンをクリックする度ページがリロードされ、画面が揺れる不具合を修正しました。
-</p>
+<div id="progress"></div>
 
 <div class="controls">
   <input type="text" id="search" placeholder="検索">
@@ -1748,16 +1741,9 @@ function updateProgress(){
     return saved[name];
   }).length;
 
-function updateProgress(){
-  const lines = badgeData.split("\n").filter(l => l.includes("　"));
-  const total = lines.length;
-  const obtained = lines.filter(l=>{
-    const name = l.split("　")[0];
-    return saved[name];
-  }).length;
   const percent = total===0 ? 0 : Math.floor(obtained / total * 100);
   document.getElementById("progress").textContent =
-    `取得率：${obtained} / ${total}（${percent}%）`;  
+    `取得率：${obtained} / ${total}（${percent}%）`;
 }
 
 // ----- ボタン操作 -----
