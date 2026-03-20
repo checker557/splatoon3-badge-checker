@@ -1748,9 +1748,16 @@ function updateProgress(){
     return saved[name];
   }).length;
 
+function updateProgress(){
+  const lines = badgeData.split("\n").filter(l => l.includes("　"));
+  const total = lines.length;
+  const obtained = lines.filter(l=>{
+    const name = l.split("　")[0];
+    return saved[name];
+  }).length;
   const percent = total===0 ? 0 : Math.floor(obtained / total * 100);
   document.getElementById("progress").textContent =
-    `取得率：${obtained} / ${total}（${percent}%）`;
+    `取得率：${obtained} / ${total}（${percent}%）`;  
 }
 
 // ----- ボタン操作 -----
