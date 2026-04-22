@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://checker557.github.io/splatoon3-badge-checker/sitemap.xml
